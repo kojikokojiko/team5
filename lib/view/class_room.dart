@@ -35,7 +35,16 @@ class ClassRoom extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ListPage();
+                          },
+                        ),
+                      );
+
+                    },
                     child: const Text(
                       '次へ',
                       style: TextStyle(fontSize: 20),
