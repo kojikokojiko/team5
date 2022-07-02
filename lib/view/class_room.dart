@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'insert_data_page.dart';
 import 'listpage.dart';
 
-
 class ClassRoom extends StatelessWidget {
   const ClassRoom({Key? key}) : super(key: key);
 
@@ -11,29 +10,40 @@ class ClassRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("dfjdfldsjflk"),
+        title: const Text("ようこそ"),
       ),
-
-      body: Container(
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ListPage()));
-
-          },
-          child: Text("移動"),
-
-        ),
-      ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => InsertDataPage()),
-          );
-
-        },
+      body: Center(
+        child: Container(
+            margin: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const TextField(
+                  decoration: InputDecoration(
+                    labelText: "グループ名",
+                    icon: Icon(Icons.group_add),
+                  ),
+                ),
+                // Flutter1.22以降のみ
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      onPrimary: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      '次へ',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ],
+            )),
       ),
     );
   }
