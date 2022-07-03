@@ -6,31 +6,33 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:intl/intl.dart';
 
+import '../model/temp_kadai_data.dart';
+import 'kadai_data_vm.dart';
 import 'listpage.dart';
-
 
 class InsertDataPage extends HookConsumerWidget {
   const InsertDataPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-
-    final kamoku=useState("");
-    final limitTime=useState(DateTime.now());
-    final content=useState("");
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tempKamoku = useState("");
+    final tempLimitTime = useState(DateTime.now());
+    final tempContent = useState("");
+    final kadaiListState=ref.watch(tempKadaiProvider);
+    final kadaiListController=ref.read(tempKadaiProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("課題の追加")
-      ),
+      appBar: AppBar(title: const Text("課題の追加")),
       body: Container(
         padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              onChanged: (String text) {
+                tempKamoku.value = text;
+              },
+              decoration: const InputDecoration(
                 labelText: "科目名",
                 icon: Icon(Icons.subject),
               ),
@@ -45,7 +47,7 @@ class InsertDataPage extends HookConsumerWidget {
                         context: context,
                         builder: (BuildContext context) {
                           // DateTime tempDay=startDay.value;
-                          DateTime tempDay =limitTime.value;
+                          DateTime tempDay = tempLimitTime.value;
 
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -72,10 +74,8 @@ class InsertDataPage extends HookConsumerWidget {
                                     ),
                                     CupertinoButton(
                                       onPressed: () {
-                                        limitTime.value=tempDay;
+                                        tempLimitTime.value = tempDay;
                                         Navigator.pop(context);
-
-
                                       },
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16.0, vertical: 5.0),
@@ -97,20 +97,20 @@ class InsertDataPage extends HookConsumerWidget {
                                     child: SafeArea(
                                       top: false,
                                       child: CupertinoDatePicker(
-                                        use24hFormat: true,
-                                        // minuteInterval: 15,
-                                        initialDateTime: limitTime.value,
-                                        onDateTimeChanged: (value) {
-                                          // tempDay = value;
-                                          // ref.read(scheduleEndTimeProvider.state).update((state) => value);
-                                          // limitTime.value=value;
-                                          tempDay=value;
-                                        },
-                                        mode:
-                                        // tempTodoState.isAllDay ?
-                                        CupertinoDatePickerMode.date
-                                            // : CupertinoDatePickerMode.dateAndTime,
-                                      ),
+                                          use24hFormat: true,
+                                          // minuteInterval: 15,
+                                          initialDateTime: tempLimitTime.value,
+                                          onDateTimeChanged: (value) {
+                                            // tempDay = value;
+                                            // ref.read(scheduleEndTimeProvider.state).update((state) => value);
+                                            // limitTime.value=value;
+                                            tempDay = value;
+                                          },
+                                          mode:
+                                              // tempTodoState.isAllDay ?
+                                              CupertinoDatePickerMode.date
+                                          // : CupertinoDatePickerMode.dateAndTime,
+                                          ),
                                     ),
                                   ),
                                 ),
@@ -120,7 +120,7 @@ class InsertDataPage extends HookConsumerWidget {
                         });
                   },
                   child: Text(
-                    DateFormat("yyyy-MM-dd").format(limitTime.value),
+                    DateFormat("yyyy-MM-dd").format(tempLimitTime.value),
 
                     // "${limitTime.value}",
                     style: const TextStyle(color: Colors.black),
@@ -129,6 +129,9 @@ class InsertDataPage extends HookConsumerWidget {
               ],
             ),
             TextFormField(
+              onChanged: (value) {
+                tempContent.value = value;
+              },
               maxLines: 6,
               minLines: 6,
               keyboardType: TextInputType.multiline,
@@ -161,9 +164,14 @@ class InsertDataPage extends HookConsumerWidget {
                   ),
                 ),
                 onPressed: () {
+                  final insertData = TempKadaiData(
+                    kamoku: tempContent.value,
+                    limitDay: tempLimitTime.value,
+                    content: tempContent.value,
+                  );
+                  kadaiListController.add(insertData);
+                  print(kadaiListState);
 
-
-                  
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
@@ -171,7 +179,6 @@ class InsertDataPage extends HookConsumerWidget {
                       },
                     ),
                   );
-
                 },
                 child: const Text(
                   '保存',

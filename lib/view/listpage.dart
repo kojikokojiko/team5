@@ -1,49 +1,88 @@
 import 'package:benese_team5/view/insert_data_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'calender_page.dart';
+import 'kadai_data_vm.dart';
+import 'modal_page.dart';
 
-
-class ListPage extends StatefulWidget {
-  const ListPage({Key? key, }) : super(key: key);
-
-
+class ListPage extends HookConsumerWidget {
   @override
-  State<ListPage> createState() => _ListPageState();
-}
-
-class _ListPageState extends State<ListPage> {
-  List<String> taskList = ["国語辞書", "英語単語帳", "歴史", "数学ドリル"];
-  List<String> taskDate = [
-    "2022/07/02",
-    "2022/07/07",
-    "2022/07/14",
-    "2022/07/24"
-  ];
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dataListState = ref.watch(tempKadaiProvider);
+    final dataList = ref.watch(tempKadaiProvider).dataList;
+    final kadaiListController = ref.read(tempKadaiProvider.notifier);
+    // final checkedList=useState([false,false,false,false,false]);
     return Scaffold(
       appBar: AppBar(
         title: const Text('YabeMa'),
       ),
       body: ListView.builder(
-        itemCount: taskList.length,
+        itemCount: dataList.length,
         itemBuilder: (context, index) {
+          // final isChecked=useState(false);
           return Column(
             children: [
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.more_vert),
-                  title: Text(taskList[index]),
-                  subtitle: Text(taskDate[index]),
-                  trailing: Icon(Icons.delete),
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    builder: (context) {
+                      return ModalPage(
+                          // day: focusingDay.value,
+                          );
+                    },
+                  );
+                },
+                child: Card(
+                  child: ListTile(
+                    leading: Checkbox(
+                      value: dataListState.dataList[index].isDone,
+                      onChanged: (value) {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) {
+                            return AlertDialog(
+
+                              title: Text("本当に終わった？"),
+                              actions: [
+                                FlatButton(
+                                  child: Text("いいえ"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                FlatButton(
+                                    child: Text("はい"),
+                                    onPressed: () {
+                                      print('はい');
+                                      // checkedList.value[index]=value!;
+                                      // isChecked.value=value!;
+                                      kadaiListController.updateIsDone(index);
+                                      Navigator.pop(context);
+
+
+                                    }),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    title: Text(dataList[index].kamoku),
+                    subtitle: Text(dataList[index].content),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        kadaiListController.delete(index);
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -52,20 +91,33 @@ class _ListPageState extends State<ListPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton(
-            onPressed: () {
-              //ボタンが押されたときの挙動
-              taskList.add('Google');
-              print(taskList);
-              setState(() {});
-            },
+            heroTag: "hero1",
+            onPressed: () {},
             tooltip: 'Increment',
             child: const Icon(Icons.alarm_add),
           ),
-          SizedBox(width: 180),
+          SizedBox(width: 100),
           FloatingActionButton(
+            heroTag: "hero2",
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return CalenderPage(datalist: dataList);
+                  },
+                ),
+              );
+            },
+            tooltip: 'カレンダー',
+            child: const Icon(Icons.calendar_month),
+          ),
+          SizedBox(width: 100),
+          FloatingActionButton(
+            heroTag: "hero3",
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -75,6 +127,7 @@ class _ListPageState extends State<ListPage> {
                 ),
               );
             },
+            tooltip: '課題追加',
             child: const Icon(Icons.add_task),
           ),
           SizedBox(width: 0),
@@ -83,10 +136,6 @@ class _ListPageState extends State<ListPage> {
     );
   }
 }
-
-
-
-
 
 // class ListPage extends StatelessWidget {
 //   const ListPage({Key? key}) : super(key: key);
