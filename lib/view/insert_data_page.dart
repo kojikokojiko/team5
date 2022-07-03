@@ -174,7 +174,7 @@ class InsertDataPage extends HookConsumerWidget {
 
                 },
                 child: const Text(
-                  '次へ',
+                  '保存',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
