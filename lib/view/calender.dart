@@ -3,11 +3,11 @@ import 'package:table_calendar/table_calendar.dart';
 import 'dart:collection';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Calendar());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Calendar extends StatelessWidget {
+  const Calendar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
